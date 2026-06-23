@@ -8,10 +8,14 @@
     "dark": "#25835d"
   },
   "logo": {
-    "light": "https://media.brand.dev/83a9161f-b8aa-4da2-b445-d6234fb6092f.svg",
-    "dark": "https://media.brand.dev/83a9161f-b8aa-4da2-b445-d6234fb6092f.svg"
+    "light": "/images/TuLIP-logo.png",
+    "dark": "/images/TuLIP-logo.png",
+    "href": "https://tulip-14ca4526.mintlify.app/introduction"
   },
-  "favicon": "https://media.brand.dev/760ae6e1-c553-4db0-b05a-db7bf19fa339.jpg",
+  "favicon": {
+    "light": "/images/flower_668095.png",
+    "dark": "/images/flower_668095.png"
+  },
   "navbar": {
     "primary": {
       "type": "github",
