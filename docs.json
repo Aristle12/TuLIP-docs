@@ -9,7 +9,7 @@
   },
   "logo": {
     "light": "/images/TuLIP-logo.png",
-    "dark": "/images/TuLIP-logo.png",
+    "dark": "/images/TuLIP-logo_dark.png",
     "href": "https://tulip-14ca4526.mintlify.app/introduction"
   },
   "favicon": {
