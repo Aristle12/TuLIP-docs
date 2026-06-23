@@ -35,8 +35,6 @@ plt.savefig('output/temperature_final.png', dpi=150)
 plt.close()
 ```
 
-To compare temperature at different snapshots, load the VTK files written during the run and subtract them — this is the approach suggested by the in-code ParaView comment (`inputs[0].PointData['Temperature'] - inputs[1].PointData['Temperature']`).
-
 ## Carbon emissions
 
 `tot_RCO2` is a list of per-timestep CO₂ emission rates (kg/yr) starting from the beginning of the emplacement phase. Plot it on a log scale to make the pulse structure visible:
@@ -108,7 +106,7 @@ plt.savefig('output/vitrinite_reflectance.png', dpi=150)
 plt.close()
 ```
 
-## Province-scale scaling
+## 3D scaling (Cube/ province level)
 
 Individual 2D slice simulations represent a thin along-strike cross-section of a much larger magmatic province. The `bloom.py` module provides functions to extrapolate single-slice CO₂ estimates to province-wide totals.
 
@@ -158,6 +156,7 @@ sc_restored.load_objlist_from_hd5f_into_class('checkpoint_t3e6.h5')
   <Card title="VTK & ParaView" icon="cube" href="/guides/vtk-visualization">
     Open snapshot VTK files in ParaView or load them with PyVista for programmatic 3D visualisation.
   </Card>
+
   <Card title="Build Sill Cube" icon="layer-group" href="/guides/building-sill-cube">
     Revisit sill cube construction and the full parameter reference for `build_sillcube()`.
   </Card>

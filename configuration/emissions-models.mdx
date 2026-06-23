@@ -17,7 +17,7 @@ SILLi models the thermal maturation of organic matter using the Easy%Ro parallel
 The SILLi calculation is performed by `emit.SILLi_emissions()`. Its key inputs and outputs are:
 
 | Argument | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `T_field` | ndarray (a, b) | Current temperature field in °C |
 | `density` | ndarray (a, b) | Rock density in kg/m³ |
 | `lithology` | ndarray (a, b) | Rock type strings |
@@ -28,10 +28,6 @@ The SILLi calculation is performed by `emit.SILLi_emissions()`. Its key inputs a
 | `W` | ndarray (20, a, b) | State array tracking remaining reaction potential |
 
 **Returns:** `RCO2` (CO₂ generation rate), `Rom` (organic matter loss rate kg/m³/s), `percRo` (vitrinite reflectance %Ro), updated `TOC`, updated `W`.
-
-<Note>
-  SILLi currently computes emissions only for cells where `lithology == 'shale'` or `lithology == 'sandstone'`. If your domain contains other organic-bearing lithologies, you either need to map them to one of these strings or use Sillburp with a custom weight array.
-</Note>
 
 ## Sillburp (multi-kerogen model)
 
@@ -44,7 +40,7 @@ Sillburp resolves organic matter into four parallel reaction networks — labile
 The Sillburp calculation is performed by `emit.sillburp()`. Its key inputs are:
 
 | Argument | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `T_field` | ndarray (a, b) | Current temperature field in °C |
 | `TOC_prev` | ndarray (a, b) | TOC from the previous time step (wt %) |
 | `density` | ndarray (a, b) | Rock density in kg/m³ |
@@ -73,8 +69,9 @@ reaction_energies = emit.get_sillburp_reaction_energies()
 <Tabs>
   <Tab title="SILLi">
     **Use SILLi when:**
-    - Your source rocks are predominantly Type III kerogen (vitrinite-like) coals and shales.
-    - You need fast run times for large ensemble studies — SILLi has fewer state variables to track.
+
+    - Your source rocks are predominantly Type III kerogen (vitrinite-like) coals and shales or there is no information on the specific type of organic matter.
+    - You need fast run times or lower memory usage for large grids — SILLi has fewer state variables to track.
     - You want to compare directly to published SILLi (Iyer et al., 2018) benchmark results.
     - Vitrinite reflectance (%Ro) is a required model output for comparison with borehole data.
 
@@ -96,10 +93,11 @@ reaction_energies = emit.get_sillburp_reaction_energies()
   </Tab>
   <Tab title="Sillburp">
     **Use Sillburp when:**
+
     - Your source rocks contain mixed Type I/II kerogens (lacustrine or marine shales).
     - You need to resolve the oil window separately from the gas window.
     - You are computing total carbon budgets that depend on distinguishing labile from refractory fractions.
-    - Runtime is less critical than geochemical accuracy.
+    - Runtime is less critical and memory is available.
 
     ```python
     props_total_array, carbon_model_params = sc.emplace_sills(
@@ -174,7 +172,7 @@ carbon_model_params = (
 The initial TOC field drives the magnitude of carbon emissions. Choosing realistic values for your lithologies is important:
 
 | Lithology | Typical TOC (wt %) | Typical porosity |
-|-----------|-------------------|-----------------|
+| --- | --- | --- |
 | Marine shale | 2–5 % | 0.05–0.15 |
 | Lacustrine shale | 3–8 % | 0.05–0.12 |
 | Sandstone | 0.3–1 % | 0.15–0.25 |
@@ -185,5 +183,5 @@ The initial TOC field drives the magnitude of carbon emissions. Choosing realist
 TuLIP reads initial TOC from `rock_prop_dict` for each lithology. You can override per-cell values after building `props_array` by directly setting `props_array[sc.TOC_index]` before calling the initialisation functions.
 
 <Tip>
-  The first call to either `SILLi_emissions()` or `sillburp()` will be noticeably slow — often 10–60 seconds — because Numba JIT-compiles the inner loops for your specific array shapes. Every subsequent call in the same Python session is fast. If you are running many short tests, consider warming up the JIT by calling the emission function once on a small dummy array at the start of your script.
+  The first call to either `SILLi_emissions()` or `sillburp()` will be noticeably slow — often 10–60 seconds — because Numba JIT-compiles the inner loops for your specific array shapes. Every subsequent call in the same Python session is fast.
 </Tip>

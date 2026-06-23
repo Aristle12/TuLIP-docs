@@ -11,16 +11,16 @@ TuLIP provides five heat-transfer solvers that cover a range of accuracy and spe
 The solver is selected by passing a string to the `cool_method` argument of `emplace_sills()` and, during initialisation, to `diff_solve()`.
 
 | Solver string | Method | Stability | Speed | Recommended use |
-|--------------|--------|-----------|-------|-----------------|
+| --- | --- | --- | --- | --- |
 | `'conv smooth'` | Explicit convolution, smoothed diffusivity | Conditionally stable | Fastest | Quick tests and parameter sweeps |
 | `'conv chain'` | Explicit convolution, chain rule | Conditionally stable | Fast | Alternative when conductivity gradients are steep |
-| `'adi'` | ADI (Alternating Direction Implicit), smoothed | Unconditionally stable | Moderate | **Recommended for production runs** |
-| `'smooth'` | Fully implicit matrix, smoothed diffusivity | Unconditionally stable | Slower | High-accuracy runs; requires pypardiso for best speed |
-| `'chain'` | Fully implicit matrix, chain rule | Unconditionally stable | Slower | High-accuracy runs with strong conductivity gradients |
+| `'adi'` | ADI (Alternating Direction Implicit), smoothed | Unconditionally stable | Moderate | Recommended for proper runs |
+| `'smooth'` | Explicit matrix, smoothed diffusivity | Conditionally stable | Slower (faster when diffusivity is homogenous) | High-accuracy runs; requires pypardiso for best speed |
+| `'chain'` | Explicit matrix, chain rule | Conditionally stable | Slower (faster when diffusivity is homogenous) | High-accuracy runs with strong conductivity gradients |
 
 ## Passing the solver
 
-You pass the solver string as `cool_method` in two places: once to `get_silli_initial_thermogenic_state()` (or `get_sillburp_initial_thermogenic_state()`) to set the solver used during thermal pre-conditioning, and once to `emplace_sills()` to set the solver used during the intrusion phase.
+You pass the solver string as `cool_method` in two places: once to `get_silli_initial_thermogenic_state()` (or `get_sillburp_initial_thermogenic_state()`) to set the solver used during thermal maturaation, and once to `emplace_sills()` to set the solver used during the intrusion phase.
 
 ```python
 import numpy as np
@@ -92,22 +92,20 @@ For basin-scale simulations with fine grids, this constraint means millions of e
 
 ## Latent and radiogenic heat
 
-<ParamField path="include_external_heat" type="bool" default="True">
+<ParamField path="include_external_heat" default="True" type="bool">
   When `True`, TuLIP explicitly calculates two additional heat source terms at every time step and adds them to the right-hand side of the diffusion equation. Set to `False` to run a pure conduction model with no internal heat generation.
 </ParamField>
 
 <Accordion title="What each source term contributes physically">
+  **Latent heat of crystallisation**
 
-**Latent heat of crystallisation**
+  When magma cools through the liquidus–solidus interval (`T_liquidus` → `T_solidus`), it releases the latent heat of crystallisation. TuLIP calls `cool.get_latH()` to compute this term from the melt fraction curve. For basalt the latent heat is approximately 4 × 10⁵ J/kg. Neglecting it causes the model to underestimate the time a sill stays hot and therefore underestimate the thermogenic carbon yield of each intrusion.
 
-When magma cools through the liquidus–solidus interval (`T_liquidus` → `T_solidus`), it releases the latent heat of crystallisation. TuLIP calls `cool.get_latH()` to compute this term from the melt fraction curve. For basalt the latent heat is approximately 4 × 10⁵ J/kg. Neglecting it causes the model to underestimate the time a sill stays hot and therefore underestimate the thermogenic carbon yield of each intrusion.
+  **Radiogenic heat production**
 
-**Radiogenic heat production**
+  The crust produces heat continuously through the radioactive decay of ²³⁸U, ²³⁵U, ²³²Th, and ⁴⁰K. TuLIP calls `cool.get_radH()` to compute a depth- and density-dependent radiogenic heat source. This term matters most for long simulations (\>1 Ma) and for deep crustal sections where it contributes a non-trivial fraction of the steady-state geotherm.
 
-The crust produces heat continuously through the radioactive decay of ²³⁸U, ²³⁵U, ²³²Th, and ⁴⁰K. TuLIP calls `cool.get_radH()` to compute a depth- and density-dependent radiogenic heat source. This term matters most for long simulations (>1 Ma) and for deep crustal sections where it contributes a non-trivial fraction of the steady-state geotherm.
+  **Organic latent heat**
 
-**Organic latent heat**
-
-When `model='silli'` or `model='sillburp'` is active, a third term — the latent heat of organic breakdown — is added via `cool.get_org_latH()`. This term captures the endothermic pyrolysis energy that slightly suppresses temperature in contact aureoles. It is automatically included when a carbon model is selected; it is not controlled by `include_external_heat`.
-
+  When `model='silli'` or `model='sillburp'` is active, a third term — the latent heat of organic breakdown — is added via `cool.get_org_latH()`. This term captures the endothermic pyrolysis energy that slightly suppresses temperature in contact aureoles. It is automatically included when a carbon model is selected; it is not controlled by `include_external_heat`.
 </Accordion>

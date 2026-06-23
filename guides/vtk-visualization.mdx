@@ -11,7 +11,7 @@ During an `emplace_sills()` run, TuLIP uses [PyVista](https://docs.pyvista.org/)
 Each snapshot VTK file is a `pv.ImageData` object (structured grid) whose point data contains the following fields:
 
 | Field name | Dtype | Description |
-|---|---|---|
+| --- | --- | --- |
 | `Temperature` | `float` | Temperature field (°C) at the saved time step |
 | `Lithology` | `str` / `object` | Rock type string per grid cell (e.g. `'shale'`, `'basalt_melt'`) |
 | `Density` | `float` | Rock density (kg/m³) |
@@ -33,34 +33,6 @@ TuLIP writes a VTK snapshot whenever `l % saving_factor[0] == 0`, where `l` is t
 At `dt ≈ 0.05` yr and a run length of 100 000 steps, `saving_factor=[100]` produces 1 000 snapshot files. Plan your disk budget before increasing snapshot frequency.
 
 ## Opening in ParaView
-
-<Steps>
-
-### Open the VTK file
-
-Launch ParaView, then go to **File → Open**. Navigate to your `save_dir` and select one or more `Properties_<step>.vtk` files. To load a time sequence, select all files in the directory and ParaView will treat them as an animation.
-
-### Apply the reader
-
-Click the **Apply** button in the Properties panel on the left. ParaView reads the file and shows the grid outline in the viewport.
-
-### Choose a field to color by
-
-In the toolbar at the top of the viewport, open the **Coloring** dropdown (it may show `Solid Color` by default). Select any of the exported field names — for example, `Temperature` or `Vitrinite reflectance`. Click the **Rescale** button (the colour-range icon) to fit the colour map to the data range.
-
-### Animate through time steps
-
-If you loaded multiple files as a sequence, use the **Play** button in the time controls toolbar to step through the snapshots and watch sill emplacement and cooling evolve.
-
-### Compute temperature difference between snapshots
-
-To visualise the temperature anomaly introduced by a sill, load two snapshots as separate sources, then apply the **Calculator** filter with the expression:
-
-```
-inputs[0].PointData['Temperature'] - inputs[1].PointData['Temperature']
-```
-
-</Steps>
 
 ## Using PyVista directly
 
@@ -164,7 +136,7 @@ plt.close()
 The default integer codes and their corresponding lithologies are:
 
 | Integer | Rock type |
-|---|---|
+| --- | --- |
 | 0 | `shale` |
 | 1 | `sandstone` |
 | 2 | `limestone` |
@@ -176,5 +148,5 @@ The default integer codes and their corresponding lithologies are:
 If you initialised `sill_controls` with a custom `rock_prop_dict`, the integer codes are assigned in the order the keys appear in that dictionary — check `sc.lith_plot_dict` at runtime to confirm your mapping.
 
 <Note>
-TuLIP names each snapshot file `Properties_<l>.vtk`, where `<l>` is the loop index over `time_steps` (not the physical simulation time in years). `emplace_sills()` writes a `dts.csv` to `save_dir` containing a `dt` column — one time-step duration per simulation step. To recover the simulation time corresponding to snapshot `l`, compute the cumulative sum: `sim_time = current_time + np.sum(dts[:l])`. The easiest approach when using `utilities.cooler()` is to load `times.csv` from the same directory, which records the actual `time_steps` value alongside each output row.
+  TuLIP names each snapshot file `Properties_<l>.vtk`, where `<l>` is the loop index over `time_steps` (not the physical simulation time in years). `emplace_sills()` writes a `dts.csv` to `save_dir` containing a `dt` column — one time-step duration per simulation step. To recover the simulation time corresponding to snapshot `l`, compute the cumulative sum: `sim_time = current_time + np.sum(dts[:l])`. The easiest approach when using `utilities.cooler()` is to load `times.csv` from the same directory, which records the actual `time_steps` value alongside each output row.
 </Note>
