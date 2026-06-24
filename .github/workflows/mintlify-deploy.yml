@@ -44,7 +44,9 @@ jobs:
           find out -type f \( -name "*.html" -o -name "*.js" \) -exec sed -i 's|%2F_next%2F|%2FTuLIP-docs%2F_next%2F|g' {} +
           find out -type f \( -name "*.html" -o -name "*.js" \) -exec sed -i 's|%2Fassets%2F|%2FTuLIP-docs%2Fassets%2F|g' {} +
           find out -type f \( -name "*.html" -o -name "*.js" \) -exec sed -i 's|%2Fimages%2F|%2FTuLIP-docs%2Fimages%2F|g' {} +
-
+          # Fix internal routing for sub-pages and sidebar clicks
+          find out -type f \( -name "*.html" -o -name "*.js" \) -exec sed -i 's|href="/|href="/YOUR-NEW-REPO/|g' {} +
+          
       - name: Deploy to GitHub Pages Branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
