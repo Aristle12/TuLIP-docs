@@ -1,7 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "TuLIP",
-  "basePath":"/TuLIP-docs",
   "theme": "palm",
   "colors": {
     "primary": "#1474ec",
